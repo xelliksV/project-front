@@ -48,11 +48,10 @@ public class PlayerController {
         if (info.title.length() > 30) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         if (isNull(info.race)) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         if (isNull(info.profession)) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        if (isNull(info.birthday) || info.birthday < 0) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        if (isNull(info.birthday)) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 
-        LocalDate localDate = new Date(info.birthday).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        int year = localDate.getYear();
-        if (year < 2000 || year > 3000) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        int year = info.birthday.getYear();
+        //if (year < 2000 || year > 3000) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 
         boolean banned = !isNull(info.banned) && info.banned;
 
@@ -96,7 +95,7 @@ public class PlayerController {
         result.title = player.getTitle();
         result.race = player.getRace();
         result.profession = player.getProfession();
-        result.birthday = player.getBirthday().getTime();
+        result.birthday = player.getBirthday();
         result.banned = player.getBanned();
         result.level = player.getLevel();
         return result;

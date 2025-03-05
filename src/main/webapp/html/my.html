@@ -23,10 +23,9 @@
 <h2>Accounts list:</h2>
 Count per page:
 <select id="sel">
-    <option value="2">2</option>
-    <option value="3">3</option>
-    <option value="4">4</option>
-    <option value="5">5</option>
+    <option value="2">1</option>
+    <option value="3">2</option>
+    <option value="4">3</option>
 </select>
 <table id="12">
     <thead>
@@ -48,6 +47,66 @@ Count per page:
 <div id="123">
     Pages:
 </div>
+<hr>
+<h1>Create new account:</h1>
+Name: <input id="i1">
+<br>
+Title: <input id="i2">
+<br>
+Race: <select id="ss">
+    <option>HUMAN</option>
+    <option>DWARF</option>
+    <option>ELF</option>
+    <option>GIANT</option>
+    <option>ORC</option>
+    <option>TROLL</option>
+    <option>HOBBIT</option>
+</select>
+<br>
+Profession: <select id="ss2">
+    <option>WARRIOR</option>
+    <option>ROGUE</option>
+    <option>SORCERER</option>
+    <option>CLERIC</option>
+    <option>PALADIN</option>
+    <option>NAZGUL</option>
+    <option>WARLOCK</option>
+    <option>DRUID</option>
+</select>
+<br>
+Level: <input type="number" id="i3">
+<br>
+Birthday: <input type="date" id="i4">
+<br>
+Banned: <select id="sss">
+    <option>true</option>
+    <option>false</option>
+</select>
+<br>
+<button id="save">
+    <img src="../img/save.png">
+</button>
+<script>
+    let sv = document.getElementById("save")
+    sv.addEventListener('click', function () {
+        const data = {
+            name: document.getElementById("i1").value,
+            title: document.getElementById("i2").value,
+            race: document.getElementById("ss").value,
+            profession: document.getElementById("ss2").value,
+            level: document.getElementById("i3").value,
+            birthday: new Date(document.getElementById("i4").value).getTime(),
+            banned: document.getElementById("sss").value
+        }
+        console.log(data)
+        $.ajax({
+            url: `rest/players`,
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify(data)
+        })
+    })
+</script>
 <script>
     const s = document.querySelector("#sel")
     let val = s.value;
@@ -70,45 +129,14 @@ Count per page:
     }
 </script>
 <script>
-    const select = document.querySelector("#sel")
-    let value = select.value;
+    const sl = document.querySelector("#sel")
+    let value = sl.value;
     let tbody = $('#12 tbody')
-    select.addEventListener('change', function () {
-        value = this.value
-        let table = document.querySelector('table');
-        while (table.rows.length) {
-            table.deleteRow(0);
-        }
-        let t = $('<tr>')
-        t.append($('<td>').html("#"))
-        t.append($('<td>').html("Name"))
-        t.append($('<td>').html("Title"))
-        t.append($('<td>').html("Race"))
-        t.append($('<td>').html("Profession"))
-        t.append($('<td>').html("Level"))
-        t.append($('<td>').html("Birthday"))
-        t.append($('<td>').html("Banned"))
-        t.append($('<td>').html("Edit"))
-        t.append($('<td>').html("Delete"))
-        tbody.append(t)
-        for (let i = 0; i < value; i++) {
-            let tr = $('<tr>')
-            tr.append($('<td>').html(elems[i].id))
-            tr.append($('<td>').html(elems[i].name))
-            tr.append($('<td>').html(elems[i].title))
-            tr.append($('<td>').html(elems[i].race))
-            tr.append($('<td>').html(elems[i].profession))
-            tr.append($('<td>').html(elems[i].level))
-            tr.append($('<td>').html(elems[i].birthday))
-            tr.append($('<td>').html(elems[i].banned))
-            let edit = document.createElement('button')
-            edit.setAttribute("class", "image-edit")
-            let del = document.createElement('button')
-            del.style.backgroundImage = "../img/delete.png"
-            tr.append($('<td>').html(del))
-            tr.append($('<td>').html(edit))
-            tbody.append(tr)
-        }
+    sl.addEventListener('change', function () {
+        value = sl.value
+        $.get("rest/players", function (data) {
+            update(value, data)
+        })
         let div = document.getElementById("123")
         div.innerHTML = "Pages: "
         let newPagesCount = 40 / value
@@ -125,28 +153,149 @@ Count per page:
             contr.appendChild(butt);
         }
     })
-    let elems;
+    let elem;
     $.get("rest/players", function (data) {
-        elems = data
-        for (let i = 0; i < value; i++) {
+        elem = data
+        update(value, data)
+    });
+</script>
+<script>
+    function update(val, elems) {
+        console.log(elems)
+        let table = document.querySelector('table');
+        while (table.rows.length) {
+            table.deleteRow(0);
+        }
+        let t = $('<tr>')
+        t.append($('<td>').html("#"))
+        t.append($('<td>').html("Name"))
+        t.append($('<td>').html("Title"))
+        t.append($('<td>').html("Race"))
+        t.append($('<td>').html("Profession"))
+        t.append($('<td>').html("Level"))
+        t.append($('<td>').html("Birthday"))
+        t.append($('<td>').html("Banned"))
+        t.append($('<td>').html("Edit"))
+        t.append($('<td>').html("Delete"))
+        tbody.append(t)
+        for (let i = 0; i < val-1; i++) {
             let tr = $('<tr>')
-            tr.append($('<td>').html(data[i].id))
-            tr.append($('<td>').html(data[i].name))
-            tr.append($('<td>').html(data[i].title))
-            tr.append($('<td>').html(data[i].race))
-            tr.append($('<td>').html(data[i].profession))
-            tr.append($('<td>').html(data[i].level))
-            tr.append($('<td>').html(data[i].birthday))
-            tr.append($('<td>').html(data[i].banned))
+            tr.append($('<td>').html(elems[i].id))
+            tr.append($('<td>').html(elems[i].name))
+            tr.append($('<td>').html(elems[i].title))
+            tr.append($('<td>').html(elems[i].race))
+            tr.append($('<td>').html(elems[i].profession))
+            tr.append($('<td>').html(elems[i].level))
+            let date = new Date(elems[i].birthday)
+            let format = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`
+            tr.append($('<td>').html(format))
+            tr.append($('<td>').html(elems[i].banned.toString()))
             let edit = document.createElement('button')
-            edit.style.backgroundImage = "../img/edit.png"
+            let flag = 1
+            let im = document.createElement('img')
+            im.src = "../img/edit.png"
+            edit.append(im)
+            edit.addEventListener('click', function () {
+                if (flag === 1) {
+                    flag = 0
+                    im.src = "../img/save.png"
+                    edit.append(im)
+                    for (let j = 1; j < table.rows[i+1].cells.length; j++) {
+                        switch (j) {
+                            case 1:
+                                table.rows[i+1].cells[j].contentEditable = "true"
+                                break;
+                            case 2:
+                                table.rows[i+1].cells[j].contentEditable = "true"
+                                break;
+                            case 3:
+                                let select = document.createElement('select')
+                                select.id = "select"
+                                table.rows[i+1].cells[j].innerHTML = ""
+                                select.add(new Option("HUMAN"))
+                                select.add(new Option("DWARF"))
+                                select.add(new Option("ELF"))
+                                select.add(new Option("GIANT"))
+                                select.add(new Option("ORC"))
+                                select.add(new Option("TROLL"))
+                                select.add(new Option("HOBBIT"))
+                                table.rows[i+1].cells[j].append(select);
+                                break
+                            case 4:
+                                let select1 = document.createElement('select')
+                                select1.id = "select1"
+                                table.rows[i+1].cells[j].innerHTML = ""
+                                select1.add(new Option("WARRIOR"))
+                                select1.add(new Option("ROGUE"))
+                                select1.add(new Option("SORCERER"))
+                                select1.add(new Option("CLERIC"))
+                                select1.add(new Option("PALADIN"))
+                                select1.add(new Option("NAZGUL"))
+                                select1.add(new Option("WARLOCK"))
+                                select1.add(new Option("DRUID"))
+                                table.rows[i+1].cells[j].append(select1);
+                                break
+                            case 7:
+                                table.rows[i+1].cells[j].innerHTML = "";
+                                let select2 = document.createElement('select')
+                                select2.id = "select2"
+                                select2.add(new Option("true"))
+                                select2.add(new Option("false"))
+                                table.rows[i+1].cells[j].append(select2);
+                                break
+                            case 9:
+                                table.rows[i+1].cells[j].style.opacity = 0
+
+                        }
+                    }
+                } else {
+                    let s = document.getElementById("select")
+                    let s1 = document.getElementById("select1")
+                    let s2 = document.getElementById("select2")
+                    $.ajax({
+                        url: `/rest/players/${elems[i].id}`,
+                        type: "POST",
+                        contentType: "application/json",
+                        data: JSON.stringify({
+                            id: table.rows[i+1].cells[0].innerHTML,
+                            name: table.rows[i+1].cells[1].innerHTML,
+                            title: table.rows[i+1].cells[2].innerHTML,
+                            race: s.value.toString(),
+                            profession: s1.value.toString(),
+                            level:  table.rows[i+1].cells[5].innerHTML,
+                            birthday: elems[i+1].birthday,
+                            banned: s2.value.toString()
+                        })
+                    })
+                    $.get("rest/players", function (data) {
+                        update(value, data)
+                    })
+                    flag = 1
+                    im.src = "../img/edit.png"
+                    table.rows[i+1].cells[9].style.opacity = 1
+                    table.rows[i+1].cells[3].innerHTML = s.value
+                    table.rows[i+1].cells[4].innerHTML = s1.value
+                    table.rows[i+1].cells[7].innerHTML = s2.value
+                }
+            })
             let del = document.createElement('button')
-            del.style.backgroundImage = "../img/delete.png"
-            tr.append($('<td>').html(del))
+            let imDel = document.createElement('img')
+            imDel.src = "../img/delete.png"
+            del.append(imDel)
+            del.addEventListener('click', function () {
+                $.ajax({
+                    url: `rest/players/${elems[i].id}`,
+                    type: "DELETE"
+                })
+                $.get("rest/players", function (data) {
+                    update(val, data)
+                })
+            })
             tr.append($('<td>').html(edit))
+            tr.append($('<td>').html(del))
             tbody.append(tr)
         }
-    });
+    }
 </script>
 </body>
 </html>

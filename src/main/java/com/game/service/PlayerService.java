@@ -30,13 +30,13 @@ public class PlayerService {
         return playerRepository.getAllCount();
     }
 
-    public Player createPlayer(String name, String title, Race race, Profession profession, long birthday, boolean banned, int level) {
+    public Player createPlayer(String name, String title, Race race, Profession profession, Date birthday, boolean banned, int level) {
         Player player = new Player();
         player.setName(name);
         player.setTitle(title);
         player.setRace(race);
         player.setProfession(profession);
-        player.setBirthday(new Date(birthday));
+        player.setBirthday(birthday);
         player.setBanned(banned);
         player.setLevel(level);
 
